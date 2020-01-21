@@ -188,6 +188,7 @@ class Shield(pygame.sprite.Sprite):
         self.rect.y = 150
         self.lives = 500
         self.mask = pygame.mask.from_surface(self.image)
+        self.damage = 0
         self.exist = True
         
     def update(self):
@@ -360,8 +361,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = 0
         elif self.rect.x > WIDTH - 60:
             self.rect.x = WIDTH - 60
-        if self.rect.y < 0:
-            self.rect.y = 0
+        if self.rect.y < 200:
+            self.rect.y = 200
         elif self.rect.y > HEIGHT - 50:
             self.rect.y = HEIGHT - 50
         if self.vulnerable_timer:
@@ -455,8 +456,8 @@ class Ufo(pygame.sprite.Sprite):
             self.speed_x, self.speed_y = 0, 0
             if self.is_boss:
                 Shield(enemy_bullets)
-                self.wall1 = Wall(enemy_bullets, 2, -40, 100, 60)
-                self.wall2 = Wall(enemy_bullets, -2, 540, 100, 400)
+                self.wall1 = Wall(enemy_bullets, 2, -40, 50, 60)
+                self.wall2 = Wall(enemy_bullets, -2, 540, 50, 400)
      
     def update(self, kill_em_all=False):
         global SCORE, boss_on_screen, ufo_timer
@@ -573,10 +574,16 @@ while running:
     if not(ufo_timer):
         Ufo(enemies)
         ufo_timer = FPS * 3
+    pygame.draw.line(screen, (255, 255, 255), (460, 10), (490, 40))
+    pygame.draw.line(screen, (255, 255, 255), (460, 40), (490, 10))
     events_now = pygame.event.get()
     for event in events_now:
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
+            if pygame.mouse.get_pressed()[0]:
+                if 460 <= pygame.mouse.get_pos()[0] <= 500 and 0 <= pygame.mouse.get_pos()[1] <= 40:
+                    running = False
     effects.update()
     player.update(events_now)
     enemies.update()
